@@ -1,4 +1,11 @@
-﻿var areVisibleEnemies = function () {
+﻿var bombExplode = function(a, b){
+    bombArray.splice(bombArray.indexOf(a), 1);
+    ++b.avalibleBombs;
+}
+
+
+
+var areVisibleEnemies = function () {
     for (var i = 0; i < enemies.length; ++i)
         if (enemies[i].visible)
             return true;
@@ -35,26 +42,94 @@ var checkHitWithStaticBlock = function (a) {
     var result = false;
     for (var i = 0; i < staticBlockArray.length; ++i) {
         if (hittest(staticBlockArray[i], a)) {
-            return  staticBlockArray[i];
+            return staticBlockArray[i];
+        }
+    }
+    return result;
+}
+
+var checkHitWithNonStBlock = function (a) {
+    var result = false;
+    for (var i = 0; i < nonStBlockArray.length; ++i) {
+        if (hittest(nonStBlockArray[i], a)) {
+            return nonStBlockArray[i];
         }
     }
     return result;
 }
 
 
+var checkHitWithBlock = function (a) {
+    var result = false;
+    result = checkHitWithStaticBlock(a);
+    if (!result) {
+        result = checkHitWithNonStBlock(a);
+    }
+    return result;
+}
+
+
+var checkHitWithBomb = function(a){
+    var result = false;
+    for (var i = 0; i < bombArray.length; ++i) {
+        if (hittest(bombArray[i], a)) {
+            return bombArray[i];
+        }
+    }
+    return result;
+}
+
+
+
+
 var initEnvironment = function () {
     var k = 0;
     for (var j = 0; j < Math.floor((gameHeight / blockSize) / 2); ++j) {
         for (var i = 0; i < Math.floor((gameHeight / blockSize) / 2); ++i) {
-            staticBlockArray[k++] = { image: staticBlockImage, x: (i * (blockSize * 2) + blockSize), y: (j * (blockSize * 2) + blockSize), w: staticBlockSize, h: staticBlockSize };
+            staticBlockArray[k++] = { image: staticBlockImage, x: (i * (blockSize * 2) + blockSize), y: (j * (blockSize * 2) + blockSize), w: blockSize, h: blockSize };
         }
     }
 }
+
+var initBlocks = function () {
+    var k = 0;
+    for (var j = 0; j < gameHeight / blockSize; ++j) {
+        for (var i = 0; i < gameHeight / blockSize; ++i) {
+            if ((i * blockSize > (blockSize) || (j * blockSize > blockSize) && (j * blockSize < gameHeight - (blockSize * 2))) && (i * blockSize) < (gameHeight - (blockSize * 2)) || (j * blockSize > blockSize) && (j * blockSize < gameHeight - (blockSize * 2))) {
+                var curX = i * blockSize;
+                var curY = j * blockSize;
+                var newStBlock = { image: nonStBlockImage, x: curX, y: curY, w: blockSize, h: blockSize };
+
+                if (!checkHitWithStaticBlock(newStBlock)) {
+                    nonStBlockArray[k++] = newStBlock;
+                }
+            }
+        }
+    }
+}
+
 
 var drawStaticBlock = function () {
     for (var i = 0; i < staticBlockArray.length; i++) {
         context.drawImage(staticBlockArray[i].image, staticBlockArray[i].x, staticBlockArray[i].y, staticBlockArray[i].w, staticBlockArray[i].h);
     }
+}
+
+var drawNonStaticBlock = function () {
+    for (var i = 0; i < nonStBlockArray.length; i++) {
+        context.drawImage(nonStBlockArray[i].image, nonStBlockArray[i].x, nonStBlockArray[i].y, nonStBlockArray[i].w, nonStBlockArray[i].h);
+    }
+}
+
+var drawBombs = function () {
+    for (var i = 0; i < bombArray.length; i++) {
+        context.drawImage(bombArray[i].image, bombArray[i].x, bombArray[i].y, bombArray[i].w, bombArray[i].h);
+    }
+}
+
+var drawPlayers = function () {
+    context.drawImage(player1.image, player1.x, player1.y, player1.w, player1.h);
+    context.drawImage(player2.image, player2.x, player2.y, player2.w, player2.h);
 }
 
 
@@ -64,10 +139,10 @@ var render = function () {
 
     if (!gameOver) {
 
-        context.drawImage(player1.image, player1.x, player1.y, player1.w, player1.h);
-        context.drawImage(player2.image, player2.x, player2.y, player2.w, player2.h);
         drawStaticBlock();
-
+        drawNonStaticBlock();
+        drawBombs();
+        drawPlayers();
 
     }
     else {
@@ -87,5 +162,6 @@ function main() {
 
 function startGame() {
     initEnvironment();
+    initBlocks();
     main();
 }

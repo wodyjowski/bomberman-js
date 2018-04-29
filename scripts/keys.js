@@ -6,16 +6,14 @@ addEventListener("keyup", function (e) { delete keysDown[e.keyCode]; }, false);
 //Zmienne pomocnicze
 var playerHit;
 
-
 var keysUpdate = function () {
     if (32 in keysDown) {
-        if (!bullet.visible) {
-            bullet.visible = true;
-            bullet.x = player1.x + 10;
-            bullet.y = player1.y - 25;
-        }
+        plantBomb(player1);
     }
 
+    if(13 in keysDown){
+        plantBomb(player2);
+    }
 
 
     //TODO: Pozbyć się stałych]
@@ -23,17 +21,17 @@ var keysUpdate = function () {
         movePlayerLeft(player2);
     }
 
-    if (39 in keysDown){
+    if (39 in keysDown) {
         movePlayerRight(player2);
     }
 
 
-    if (38 in keysDown){
+    if (38 in keysDown) {
         movePlayerUp(player2);
     }
 
 
-    if (40 in keysDown){
+    if (40 in keysDown) {
         movePlayerDown(player2);
     }
 
@@ -63,29 +61,39 @@ var keysUpdate = function () {
 
 function movePlayerUp(player) {
     var playerTest = { x: player.x, y: player.y - player.speed, w: player.w, h: player.h }
-    if (player.y > 0 && !checkHitWithStaticBlock(playerTest))
+    if (player.y > 0 && !checkHitWithBlock(playerTest))
         player.y -= player.speed;
 }
 
 function movePlayerDown(player) {
     var playerTest = { x: player.x, y: player.y + player.speed, w: player.w, h: player.h }
-    if (player.y < gameHeight - player.h && !checkHitWithStaticBlock(playerTest))
+    if (player.y < gameHeight - player.h && !checkHitWithBlock(playerTest))
         player.y += player.speed;
 }
 
 function movePlayerLeft(player) {
     var playerTest = { x: player.x - player.speed, y: player.y, w: player.w, h: player.h }
-    if (player.x > 0 && !(playerHit = checkHitWithStaticBlock(playerTest))) {
+    if (player.x > 0 && !(playerHit = checkHitWithBlock(playerTest))) {
         player.x -= player.speed;
     } else
         if (playerHit !== "undefined") {
-
+            nonStBlockArray.splice(nonStBlockArray.indexOf(playerHit), 1);
 
         }
 }
 
 function movePlayerRight(player) {
     var playerTest = { x: player.x + player.speed, y: player.y, w: player.w, h: player.h }
-    if (player.x < gameWidth - player.w && !checkHitWithStaticBlock(playerTest))
+    if (player.x < gameWidth - player.w && !checkHitWithBlock(playerTest))
         player.x += player.speed;
+}
+
+
+function plantBomb(player){
+    if (player.avalibleBombs > 0 && !checkHitWithBomb(player)) {
+        --player.avalibleBombs;
+        newBomb = { image: bomb.image, x: player.x, y: player.y, w: bomb.w, h: bomb.h };
+        bombArray.push(newBomb);
+        setTimeout(function(){bombExplode(newBomb, player);}, 3000);
+    }
 }
