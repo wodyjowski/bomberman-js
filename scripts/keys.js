@@ -73,6 +73,7 @@ function movePlayerDown(player) {
 
 function movePlayerLeft(player) {
     var playerTest = { x: player.x - player.speed, y: player.y, w: player.w, h: player.h }
+    player.image = player.imageLeft;
     if (player.x > 0 && !(playerHit = checkHitWithBlock(playerTest))) {
         player.x -= player.speed;
     } else
@@ -84,6 +85,7 @@ function movePlayerLeft(player) {
 
 function movePlayerRight(player) {
     var playerTest = { x: player.x + player.speed, y: player.y, w: player.w, h: player.h }
+    player.image = player.imageRight;
     if (player.x < gameWidth - player.w && !checkHitWithBlock(playerTest))
         player.x += player.speed;
 }

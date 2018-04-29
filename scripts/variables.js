@@ -25,14 +25,18 @@ bgImage.src = "images/background.png";
 
 
 //Player1
-var player1Image = new Image();
-player1Image.src = "images/player1.png";
-var player1 = { image: player1Image, x: 0, y: gameHeight - playerSize, w: playerSize, h: playerSize, speed: player1Speed, avalibleBombs: bombsOnStart };
+var player1ImageLeft = new Image();
+player1ImageLeft.src = "images/player1Left.png";
+var player1ImageRight = new Image();
+player1ImageRight.src = "images/player1Right.png";
+var player1 = { image: player1ImageRight, imageLeft: player1ImageLeft, imageRight: player1ImageRight,  x: 0, y: gameHeight - playerSize, w: playerSize, h: playerSize, speed: player1Speed, avalibleBombs: bombsOnStart };
 
 //Player2
-var player2Image = new Image();
-player2Image.src = "images/player2.png";
-var player2 = { image: player2Image, x: gameWidth - playerSize, y: 0, w: playerSize, h: playerSize, speed: player1Speed, avalibleBombs: bombsOnStart };
+var player2ImageLeft = new Image();
+player2ImageLeft.src = "images/player2Left.png";
+var player2ImageRight = new Image();
+player2ImageRight.src = "images/player2Right.png";
+var player2 = { image: player2ImageLeft, imageLeft: player2ImageLeft, imageRight: player2ImageRight, x: gameWidth - playerSize, y: 0, w: playerSize, h: playerSize, speed: player1Speed, avalibleBombs: bombsOnStart };
 
 //Niezniszczalny klocek
 var staticBlockImage = new Image();
