@@ -9,7 +9,7 @@ var gameOver = false;
 var winner;
 
 var playerStartSpeed = 5;
-var bombsOnStart = 3;
+var bombsOnStart = 1;
 var startExplosionSize = 1;
 
 
