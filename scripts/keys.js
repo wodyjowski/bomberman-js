@@ -59,33 +59,56 @@ var keysUpdate = function () {
 
     };
 
+    var bombTest;
+    var distancePlayerBomb;
+    var distancePlayerTestBomb;
 
+    /*
+            if (!(bombTest = checkBombMovement(playerTest))
+            || (distancePlayerBomb =  Math.sqrt(Math.pow(bombTest.x - player.x, 2) + Math.pow(bombTest.y - player.y, 2)))
+            < (distancePlayerTestBomb = Math.sqrt(Math.pow(bombTest.x - playerTest.x, 2) + Math.pow(bombTest.y - playerTest.y, 2))))
+    */
 
     function movePlayerUp(player) {
         var playerTest = { x: player.x, y: player.y - player.speed, w: player.w, h: player.h }
-        if (player.y > 0 && !checkHitWithBlock(playerTest))
-            player.y -= player.speed;
+        if (player.y > 0 && !checkHitWithBlock(playerTest)) {
+            if (playerOnBomb(player, playerTest)) {
+                player.y -= player.speed;
+                checkPowerUps(player);
+            }
+        }
     }
 
     function movePlayerDown(player) {
         var playerTest = { x: player.x, y: player.y + player.speed, w: player.w, h: player.h }
-        if (player.y < gameHeight - player.h && !checkHitWithBlock(playerTest))
-            player.y += player.speed;
+        if (player.y < gameHeight - player.h && !checkHitWithBlock(playerTest)) {
+            if (playerOnBomb(player, playerTest)) {
+                player.y += player.speed;
+                checkPowerUps(player);
+            }
+        }
     }
 
     function movePlayerLeft(player) {
         var playerTest = { x: player.x - player.speed, y: player.y, w: player.w, h: player.h }
         player.image = player.imageLeft;
         if (player.x > 0 && !(playerHit = checkHitWithBlock(playerTest))) {
-            player.x -= player.speed;
+            if (playerOnBomb(player, playerTest)) {
+                player.x -= player.speed;
+                checkPowerUps(player);
+            }
         }
     }
 
     function movePlayerRight(player) {
         var playerTest = { x: player.x + player.speed, y: player.y, w: player.w, h: player.h }
         player.image = player.imageRight;
-        if (player.x < gameWidth - player.w && !checkHitWithBlock(playerTest))
-            player.x += player.speed;
+        if (player.x < gameWidth - player.w && !checkHitWithBlock(playerTest)) {
+            if (playerOnBomb(player, playerTest)) {
+                player.x += player.speed;
+                checkPowerUps(player);
+            }
+        }
     }
 
 
@@ -94,8 +117,8 @@ var keysUpdate = function () {
             --player.avalibleBombs;
             newBomb = { image: bomb.image, x: Math.round(player.x / blockSize) * blockSize, y: Math.round(player.y / blockSize) * blockSize, w: bomb.w, h: bomb.h };
             bombArray.push(newBomb);
+            player.onBomb = newBomb;
             setTimeout(function () { bombExplode(newBomb, player); }, 3000);
-            console.log(bombArray);
         }
     }
 }

@@ -1,14 +1,59 @@
-﻿var bombExplode = function (bomb, player) {
+﻿var checkPowerUps = function (player) {
+    var result = false;
+    for (var i = 0; i < powerUpArray.length; ++i) {
+        if (hittest(powerUpArray[i], player)) {
+            result = powerUpArray[i];
+        }
+    }
+
+    if (result) {
+        powerUpArray.splice(powerUpArray.indexOf(result), 1);
+
+        switch (result.type) {
+            case "bombAdd":
+                ++player.avalibleBombs;
+                break;
+            case "bombUp":
+                ++player.explosionSize;
+                break;
+            case "speedUp":
+                player.speed += 1;
+                break;
+        }
+    }
+
+    return result;
+}
+
+
+var playerOnBomb = function (player, playerTest) {
+    var result = true;
+    if (player.onBomb != null) {
+        if (!hittest(player, player.onBomb)) {
+            player.onBomb = null;
+        }
+        var diffBomb = checkHitWithBomb(playerTest);
+        if(diffBomb && diffBomb != player.onBomb){
+            result = false;
+        }
+    } else {
+        result = !checkHitWithBomb(playerTest);
+    }
+    return result;
+}
+
+
+var bombExplode = function (bomb, player) {
     if (!gameOver) {
         var currentBomb = bombArray.shift();
         ++player.avalibleBombs;
-        explosion(currentBomb);
+        explosion(currentBomb, player);
     }
 }
 
 
 
-var explosion = function (bomb, iteration = 0, up = true, down = true, left = true, right = true, createdBombs = []) {
+var explosion = function (bomb, player, iteration = 0, up = true, down = true, left = true, right = true, createdBombs = []) {
     if (!gameOver) {
         if (iteration == 0) {
             var newExplosion = { image: explosionImage, x: bomb.x, y: bomb.y, w: blockSize, h: blockSize };
@@ -92,8 +137,8 @@ var explosion = function (bomb, iteration = 0, up = true, down = true, left = tr
                 }
             }
         }
-        if (iteration < 2) {
-            setTimeout(function () { explosion(bomb, ++iteration, up, down, left, right, createdBombs); }, 50);
+        if (iteration < player.explosionSize) {
+            setTimeout(function () { explosion(bomb, player, ++iteration, up, down, left, right, createdBombs); }, 50);
         } else {
             setTimeout(function () { removeExplosion(createdBombs); }, 500);
         }
@@ -171,6 +216,14 @@ var checkHitWithBlock = function (a) {
     return result;
 }
 
+var checkBombMovement = function (a) {
+    var result = false;
+    result = checkHitWithBomb(a);
+
+    return result;
+}
+
+
 
 var checkHitWithBomb = function (a) {
     var result = false;
@@ -208,6 +261,42 @@ var initBlocks = function () {
                 }
             }
         }
+    }
+}
+
+
+var initPowerups = function () {
+    var k = 0;
+    for (var j = 0; j < gameHeight / blockSize; ++j) {
+        for (var i = 0; i < gameHeight / blockSize; ++i) {
+            if ((i * blockSize > (blockSize) || (j * blockSize > blockSize) && (j * blockSize < gameHeight - (blockSize * 2))) && (i * blockSize) < (gameHeight - (blockSize * 2)) || (j * blockSize > blockSize) && (j * blockSize < gameHeight - (blockSize * 2))) {
+                var curX = i * blockSize;
+                var curY = j * blockSize;
+                if (Math.floor(Math.random() * 3) == 1) {
+                    var newPowerUp;
+                    switch (Math.floor(Math.random() * 3)) {
+                        case 0:
+                            newPowerUp = { image: bombAddImage, x: curX, y: curY, w: blockSize, h: blockSize, type: "bombAdd" };
+                            break;
+                        case 1:
+                            newPowerUp = { image: bombUpImage, x: curX, y: curY, w: blockSize, h: blockSize, type: "bombUp" };
+                            break;
+                        case 2:
+                            newPowerUp = { image: speedUpImage, x: curX, y: curY, w: blockSize, h: blockSize, type: "speedUp" };
+                            break;
+                    }
+                    if (!checkHitWithStaticBlock(newPowerUp)) {
+                        powerUpArray[k++] = newPowerUp;
+                    }
+                }
+            }
+        }
+    }
+}
+
+var drawPowerUps = function () {
+    for (var i = 0; i < powerUpArray.length; i++) {
+        context.drawImage(powerUpArray[i].image, powerUpArray[i].x, powerUpArray[i].y, powerUpArray[i].w, powerUpArray[i].h);
     }
 }
 
@@ -267,6 +356,7 @@ var render = function () {
     context.drawImage(bgImage, 0, 0);
 
     drawStaticBlock();
+    drawPowerUps();
     drawNonStaticBlock();
     drawBombs();
     drawPlayers();
@@ -287,5 +377,6 @@ function main() {
 function startGame() {
     initEnvironment();
     initBlocks();
+    initPowerups();
     main();
 }
