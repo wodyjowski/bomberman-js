@@ -3,12 +3,14 @@ var keysDown = {};
 addEventListener("keydown", function (e) { keysDown[e.keyCode] = true; }, false);
 addEventListener("keyup", function (e) { delete keysDown[e.keyCode]; }, false);
 
+addEventListener("click", function (e) { restartGame(e); }, false);
+
 //Zmienne pomocnicze
 var playerHit;
 
 var keysUpdate = function () {
     if (!gameOver) {
-
+        
         if (32 in keysDown) {
             plantBomb(player1);
         }

@@ -1,4 +1,28 @@
-﻿var checkPowerUps = function (player) {
+﻿var restartGame = function (e) {
+    if (gameOver) {
+        var rect = canvas.getBoundingClientRect();
+        var click = { x: e.clientX - rect.left, y: e.clientY - rect.top, w: 2, h: 2 }
+        if (hittest(restarImageSize, click)) {
+            bombArray = [];
+            explosionArray = [];
+            staticBlockArray = [];
+            nonStBlockArray = [];
+            powerUpArray = [];
+            restartGameInit();
+            gameOver = false;
+            winner = null;
+        }
+    }
+}
+
+function restartGameInit() {
+    initPlayer();
+    initEnvironment();
+    initBlocks();
+    initPowerups();
+}
+
+var checkPowerUps = function (player) {
     var result = false;
     for (var i = 0; i < powerUpArray.length; ++i) {
         if (hittest(powerUpArray[i], player)) {
@@ -33,7 +57,7 @@ var playerOnBomb = function (player, playerTest) {
             player.onBomb = null;
         }
         var diffBomb = checkHitWithBomb(playerTest);
-        if(diffBomb && diffBomb != player.onBomb){
+        if (diffBomb && diffBomb != player.onBomb) {
             result = false;
         }
     } else {
@@ -54,94 +78,98 @@ var bombExplode = function (bomb, player) {
 
 
 var explosion = function (bomb, player, iteration = 0, up = true, down = true, left = true, right = true, createdBombs = []) {
-    if (!gameOver) {
-        if (iteration == 0) {
-            var newExplosion = { image: explosionImage, x: bomb.x, y: bomb.y, w: blockSize, h: blockSize };
-            explosionArray.push(newExplosion);
-            createdBombs.push(newExplosion);
-            checkHitWithPlayer(newExplosion);
-        }
-        else {
-            var newExplosion;
-            for (var i = 0; i < 4; ++i) {
-                var addExplosion = false;
-                switch (i) {
-                    case 0:
-                        if (right) {
-                            newExplosion = { image: explosionImage, x: bomb.x + (blockSize * iteration), y: bomb.y, w: blockSize, h: blockSize };
-                            if (checkHitWithStaticBlock(newExplosion)) {
-                                right = false;
-                            } else {
-                                addExplosion = true;
-                                if (destroyBlocks(newExplosion)) {
+    try {
+        if (!gameOver) {
+            if (iteration == 0) {
+                var newExplosion = { image: explosionImage, x: bomb.x, y: bomb.y, w: blockSize, h: blockSize };
+                explosionArray.push(newExplosion);
+                createdBombs.push(newExplosion);
+                checkHitWithPlayer(newExplosion);
+            }
+            else {
+                var newExplosion;
+                for (var i = 0; i < 4; ++i) {
+                    var addExplosion = false;
+                    switch (i) {
+                        case 0:
+                            if (right) {
+                                newExplosion = { image: explosionImage, x: bomb.x + (blockSize * iteration), y: bomb.y, w: blockSize, h: blockSize };
+                                if (checkHitWithStaticBlock(newExplosion)) {
                                     right = false;
                                 } else {
-                                    checkHitWithPlayer(newExplosion);
+                                    addExplosion = true;
+                                    if (destroyBlocks(newExplosion)) {
+                                        right = false;
+                                    } else {
+                                        checkHitWithPlayer(newExplosion);
+                                    }
                                 }
                             }
-                        }
-                        break;
-                    case 1:
-                        if (left) {
-                            newExplosion = { image: explosionImage, x: bomb.x - (blockSize * iteration), y: bomb.y, w: blockSize, h: blockSize };
-                            if (checkHitWithStaticBlock(newExplosion)) {
-                                left = false;
-                            } else {
-                                addExplosion = true;
-                                if (destroyBlocks(newExplosion)) {
+                            break;
+                        case 1:
+                            if (left) {
+                                newExplosion = { image: explosionImage, x: bomb.x - (blockSize * iteration), y: bomb.y, w: blockSize, h: blockSize };
+                                if (checkHitWithStaticBlock(newExplosion)) {
                                     left = false;
                                 } else {
-                                    checkHitWithPlayer(newExplosion);
+                                    addExplosion = true;
+                                    if (destroyBlocks(newExplosion)) {
+                                        left = false;
+                                    } else {
+                                        checkHitWithPlayer(newExplosion);
+                                    }
                                 }
                             }
-                        }
-                        break;
+                            break;
 
-                    case 2:
-                        if (down) {
-                            newExplosion = { image: explosionImage, x: bomb.x, y: bomb.y + (blockSize * iteration), w: blockSize, h: blockSize };
-                            if (checkHitWithStaticBlock(newExplosion)) {
-                                down = false;
-                            } else {
-                                addExplosion = true;
-                                if (destroyBlocks(newExplosion)) {
+                        case 2:
+                            if (down) {
+                                newExplosion = { image: explosionImage, x: bomb.x, y: bomb.y + (blockSize * iteration), w: blockSize, h: blockSize };
+                                if (checkHitWithStaticBlock(newExplosion)) {
                                     down = false;
                                 } else {
-                                    checkHitWithPlayer(newExplosion);
+                                    addExplosion = true;
+                                    if (destroyBlocks(newExplosion)) {
+                                        down = false;
+                                    } else {
+                                        checkHitWithPlayer(newExplosion);
+                                    }
                                 }
                             }
-                        }
-                        break;
-                    case 3:
-                        if (up) {
-                            newExplosion = { image: explosionImage, x: bomb.x, y: bomb.y - (blockSize * iteration), w: blockSize, h: blockSize };
-                            if (checkHitWithStaticBlock(newExplosion)) {
-                                up = false;
-                            } else {
-                                addExplosion = true;
-                                if (destroyBlocks(newExplosion)) {
+                            break;
+                        case 3:
+                            if (up) {
+                                newExplosion = { image: explosionImage, x: bomb.x, y: bomb.y - (blockSize * iteration), w: blockSize, h: blockSize };
+                                if (checkHitWithStaticBlock(newExplosion)) {
                                     up = false;
                                 } else {
-                                    checkHitWithPlayer(newExplosion);
+                                    addExplosion = true;
+                                    if (destroyBlocks(newExplosion)) {
+                                        up = false;
+                                    } else {
+                                        checkHitWithPlayer(newExplosion);
+                                    }
                                 }
                             }
-                        }
-                        break;
+                            break;
 
-                }
-                if (addExplosion) {
-                    if (!checkHitWithStaticBlock(newExplosion)) {
-                        explosionArray.push(newExplosion);
-                        createdBombs.push(newExplosion);
+                    }
+                    if (addExplosion) {
+                        if (!checkHitWithStaticBlock(newExplosion)) {
+                            explosionArray.push(newExplosion);
+                            createdBombs.push(newExplosion);
+                        }
                     }
                 }
             }
+            if (iteration < player.explosionSize) {
+                setTimeout(function () { explosion(bomb, player, ++iteration, up, down, left, right, createdBombs); }, 50);
+            } else {
+                setTimeout(function () { removeExplosion(createdBombs); }, 500);
+            }
         }
-        if (iteration < player.explosionSize) {
-            setTimeout(function () { explosion(bomb, player, ++iteration, up, down, left, right, createdBombs); }, 50);
-        } else {
-            setTimeout(function () { removeExplosion(createdBombs); }, 500);
-        }
+    } catch (e) {
+        //Wyjątek przy restarcie a nie chce mi sie ściągać timeoutów
     }
 }
 
@@ -164,14 +192,14 @@ var destroyBlocks = function (explosion) {
 
 var checkHitWithPlayer = function (explosion) {
     if (hittest(player1, explosion)) {
-        winner(player2);
+        win(player2);
     } else if (hittest(player2, explosion)) {
-        winner(player1);
+        win(player1);
     }
 }
 
 
-var winner = function (player) {
+var win = function (player) {
     gameOver = true;
     winner = player;
 }
@@ -332,23 +360,19 @@ var drawPlayers = function () {
 }
 
 var drawWinner = function () {
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.strokeStyle = 'black';
-    context.lineWidth = 2.5;
-    context.font = "bolder 78px Arial";
+    var winImage;
     switch (winner) {
         case player2:
-            context.fillStyle = "red";
-            context.fillText("Wygrał gracz czerwony", gameWidth / 2, gameHeight / 2);
-            context.strokeText("Wygrał gracz czerwony", gameWidth / 2, gameHeight / 2);
+            winImage = player2WinImage;
             break;
         case player1:
-            context.fillStyle = "green";
-            context.fillText("Wygrał gracz zielony", gameWidth / 2, gameHeight / 2);
-            context.strokeText("Wygrał gracz zielony", gameWidth / 2, gameHeight / 2);
+            winImage = player1WinImage;
             break;
     }
+    context.fillStyle = "#808080";
+    context.fillRect(gameWidth / 5, gameHeight / 5, (gameWidth / 5) * 3, (gameHeight / 5) * 3);
+    context.drawImage(winImage, (gameWidth / 2) - 4 * (winImageSize.w / 10), (gameHeight / 2) - 5 * (winImageSize.h / 6), winImageSize.w, winImageSize.h);
+    context.drawImage(restartImage, restarImageSize.x, restarImageSize.y, restarImageSize.w, restarImageSize.h);
 }
 
 
@@ -375,6 +399,7 @@ function main() {
 
 
 function startGame() {
+    initPlayer();
     initEnvironment();
     initBlocks();
     initPowerups();
