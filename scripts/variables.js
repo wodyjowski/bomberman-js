@@ -3,7 +3,7 @@ var gameWidth = 880;
 var gameHeight = 880;
 
 var blockSize = 80;
-var playerSize = 75;
+var playerSize = 70;
 
 var gameOver = false;
 var winner;

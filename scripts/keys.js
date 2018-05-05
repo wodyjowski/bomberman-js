@@ -5,12 +5,10 @@ addEventListener("keyup", function (e) { delete keysDown[e.keyCode]; }, false);
 
 addEventListener("click", function (e) { restartGame(e); }, false);
 
-//Zmienne pomocnicze
-var playerHit;
 
 var keysUpdate = function () {
     if (!gameOver) {
-        
+
         if (32 in keysDown) {
             plantBomb(player1);
         }
@@ -62,8 +60,7 @@ var keysUpdate = function () {
     };
 
     var bombTest;
-    var distancePlayerBomb;
-    var distancePlayerTestBomb;
+    var blockHit;
 
     /*
             if (!(bombTest = checkBombMovement(playerTest))
@@ -71,43 +68,47 @@ var keysUpdate = function () {
             < (distancePlayerTestBomb = Math.sqrt(Math.pow(bombTest.x - playerTest.x, 2) + Math.pow(bombTest.y - playerTest.y, 2))))
     */
 
-    function movePlayerUp(player) {
+    function movePlayerUp(player, offset = 0) {
         var playerTest = { x: player.x, y: player.y - player.speed, w: player.w, h: player.h }
-        if (player.y > 0 && !checkHitWithBlock(playerTest)) {
+        if (player.y > 0 && !(blockHit = checkHitWithBlock(playerTest))) {
             if (playerOnBomb(player, playerTest)) {
-                player.y -= player.speed;
+                player.y -= player.speed - offset;
                 checkPowerUps(player);
             }
         }
     }
 
-    function movePlayerDown(player) {
+    function movePlayerDown(player, offset = 0) {
         var playerTest = { x: player.x, y: player.y + player.speed, w: player.w, h: player.h }
-        if (player.y < gameHeight - player.h && !checkHitWithBlock(playerTest)) {
+        if (player.y < gameHeight - player.h && !(blockHit = checkHitWithBlock(playerTest))) {
             if (playerOnBomb(player, playerTest)) {
-                player.y += player.speed;
+                player.y += player.speed - offset;
                 checkPowerUps(player);
             }
         }
     }
 
-    function movePlayerLeft(player) {
+    function movePlayerLeft(player, offset = 0) {
         var playerTest = { x: player.x - player.speed, y: player.y, w: player.w, h: player.h }
-        player.image = player.imageLeft;
-        if (player.x > 0 && !(playerHit = checkHitWithBlock(playerTest))) {
+        if (offset == 0) {
+            player.image = player.imageLeft;
+        }
+        if (player.x > 0 && !(blockHit = checkHitWithBlock(playerTest))) {
             if (playerOnBomb(player, playerTest)) {
-                player.x -= player.speed;
+                player.x -= player.speed - offset;
                 checkPowerUps(player);
             }
         }
     }
 
-    function movePlayerRight(player) {
+    function movePlayerRight(player, offset = 0) {
         var playerTest = { x: player.x + player.speed, y: player.y, w: player.w, h: player.h }
-        player.image = player.imageRight;
-        if (player.x < gameWidth - player.w && !checkHitWithBlock(playerTest)) {
+        if (offset == 0) {
+            player.image = player.imageRight;
+        }
+        if (player.x < gameWidth - player.w && !(blockHit = checkHitWithBlock(playerTest))) {
             if (playerOnBomb(player, playerTest)) {
-                player.x += player.speed;
+                player.x += player.speed - offset;
                 checkPowerUps(player);
             }
         }
