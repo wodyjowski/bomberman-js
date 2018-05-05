@@ -6,6 +6,7 @@ var blockSize = 80;
 var playerSize = 75;
 
 var gameOver = false;
+var winner;
 
 var player1Speed = 5;
 
@@ -57,4 +58,10 @@ bombImage.src = "images/bomb.png";
 var bomb = { image: bombImage, x: 0, y: 0, w: blockSize, h: blockSize };
 var bombArray = [];
 
+
+//Wybuch
+var explosionImage = new Image();
+explosionImage.src = "images/explosion.png";
+var explosion = { image: explosionImage, x: 0, y: 0, w: blockSize, h: blockSize };
+var explosionArray = [];
 
