@@ -7,10 +7,12 @@
             explosionArray = [];
             staticBlockArray = [];
             nonStBlockArray = [];
-            powerUpArray = [];
-            restartGameInit();
+            powerUpArray = []; 
             gameOver = false;
             winner = null;
+            song.pause();
+            song.currentTime = 0;
+            restartGameInit();
         }
     }
 }
@@ -32,6 +34,9 @@ var checkPowerUps = function (player) {
 
     if (result) {
         powerUpArray.splice(powerUpArray.indexOf(result), 1);
+        
+        var collectSound = new Audio(collectUrl);
+        collectSound.play();
 
         switch (result.type) {
             case "bombAdd":
@@ -78,7 +83,7 @@ var bombExplode = function (bomb, player) {
 
 
 var explosion = function (bomb, player, iteration = 0, up = true, down = true, left = true, right = true, createdBombs = []) {
-    try {
+    try {      
         if (!gameOver) {
             if (iteration == 0) {
                 var newExplosion = { image: explosionImage, x: bomb.x, y: bomb.y, w: blockSize, h: blockSize };
@@ -158,6 +163,8 @@ var explosion = function (bomb, player, iteration = 0, up = true, down = true, l
                         if (!checkHitWithStaticBlock(newExplosion)) {
                             explosionArray.push(newExplosion);
                             createdBombs.push(newExplosion);
+                            var explosionSound = new Audio(explosionUrl);
+                            explosionSound.play();
                         }
                     }
                 }
@@ -200,6 +207,9 @@ var checkHitWithPlayer = function (explosion) {
 
 
 var win = function (player) {
+
+    song.play();
+
     gameOver = true;
     winner = player;
 }

@@ -99,3 +99,20 @@ player2WinImage.src = "images/player2Win.png";
 
 var restartImage = new Image();
 restartImage.src = "images/restart.png";
+
+//Muzyka
+var song = new Audio("sounds/endMusic.mp3");
+
+explosionUrl = "sounds/explosion.mp3";
+
+plantUrl = "sounds/plant.mp3";
+
+collectUrl = "sounds/collect.mp3";
+
+
+/*
+song.addEventListener('ended', function () {
+    this.currentTime = 0;
+    this.play();
+}, false);
+*/

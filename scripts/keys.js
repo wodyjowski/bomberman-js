@@ -121,6 +121,8 @@ var keysUpdate = function () {
             newBomb = { image: bomb.image, x: Math.round(player.x / blockSize) * blockSize, y: Math.round(player.y / blockSize) * blockSize, w: bomb.w, h: bomb.h };
             bombArray.push(newBomb);
             player.onBomb = newBomb;
+            var plantSound = new Audio(plantUrl);
+            plantSound.play();
             setTimeout(function () { bombExplode(newBomb, player); }, 3000);
         }
     }
